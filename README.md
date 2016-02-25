@@ -12,7 +12,7 @@ Your methods will be:
 - `tasks.edit(documentId, modifier)`
 - `tasks.delete(documentId)`
 
-#### [Watch 5-minute intro video]()
+#### [Watch 5-minute intro video](https://www.youtube.com/watch?v=jp04IowUxTI&feature=youtu.be)
 
 ### Install
 
