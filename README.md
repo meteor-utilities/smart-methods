@@ -1,6 +1,18 @@
 # Smart Methods
 
-Create methods based on your collection schema
+Create methods based on your collection schema.
+
+This creates three methods. Assuming your collection is declared with:
+
+`Tasks = new Mongo.Collection("tasks");`
+
+Your methods will be:
+
+- `tasks.create(document)`
+- `tasks.edit(documentId, modifier)`
+- `tasks.delete(documentId)`
+
+#### [Watch 5-minute intro video]()
 
 ### Install
 
