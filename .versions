@@ -46,6 +46,6 @@ spacebars-compiler@1.0.7
 tracker@1.0.9
 ui@1.0.8
 underscore@1.0.4
-utilities:smart-methods@0.0.1
+utilities:smart-methods@0.0.2
 webapp@1.2.3
 webapp-hashing@1.0.5

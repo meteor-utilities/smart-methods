@@ -1,16 +1,8 @@
 # Smart Methods
 
-Create methods based on your collection schema.
+This package defines a convention for storing field edition rules in your collection schema.
 
-This creates three methods. Assuming your collection is declared with:
-
-`Tasks = new Mongo.Collection("tasks");`
-
-Your methods will be:
-
-- `tasks.create(document)`
-- `tasks.edit(documentId, modifier)`
-- `tasks.delete(documentId)`
+Aditionally, it can also automatically create default methods based on these rules.
 
 #### [Watch 5-minute intro video](https://www.youtube.com/watch?v=jp04IowUxTI&feature=youtu.be)
 
@@ -20,51 +12,30 @@ Your methods will be:
 meteor add utilities:smart-methods
 ```
 
-### Usage
+### Schema Definition
 
-#### Initialize your methods:
+The package provides two new properties.
 
-```
-Tasks.initMethods({
-  deleteIf: function (userId, document) {
-    return userId === document.owner;
-  },
-  createCallback: function (document) {
-    document = _.extend(document, {
-      createdAt: new Date(),
-      owner: Meteor.userId(),
-      username: Meteor.user().username
-    });
-    return document;
-  },
-  editCallback: function (modifier) {
-    modifier.$set.editedAt = new Date();
-    return modifier;
-  }
-});
-```
-
-- `deleteIf`: a function called when deleting a document.
-- `createCallback`: a function called on a document being created.
-- `editCallback`: a function called on a document beind modified.
-
-#### Define your schema
+- `insertableIf (user)`: called on the `user` performing the operation, should return `true` or `false`.
+- `editableIf (user, document)`: called on the `user` performing the operation, and the `document` being operated on, and should return `true` or `false`.
 
 ```js
-const hasUserId = function (userId) {
-  return !!userId;
+Tasks = new Mongo.Collection("tasks");
+
+const isLoggedIn = function (user) {
+  return !!user;
 }
 
-const isOwner = function (userId, document) {
-  return userId === document.owner;
+const isOwner = function (user, document) {
+  return user._id === document.owner;
 }
 
 const tasksSchema = new SimpleSchema({
   text: {
     type: String,
     public: true,
-    createIf: hasUserId,
-    editIf: isOwner
+    insertableIf: isLoggedIn,
+    editableIf: isOwner
   },
   createdAt: {
     type: Date,
@@ -77,9 +48,10 @@ const tasksSchema = new SimpleSchema({
   checked: {
     type: Boolean,
     public: true, 
-    editIf: function (userId, document) {
+    insertableIf: isLoggedIn,
+    editableIf: function (user, document) {
       if (document.private) {
-        return userId === document.owner;
+        return user._id === document.owner;
       } else {
         return true;
       }
@@ -88,8 +60,58 @@ const tasksSchema = new SimpleSchema({
   private: {
     type: Boolean,
     public: true, 
-    editIf: isOwner
+    insertableIf: isLoggedIn,
+    editableIf: isOwner
   }
 });
+
 Tasks.attachSchema(tasksSchema);
 ```
+
+### Smart Methods
+
+This package can optionally creates three default methods based on your schema. Assuming your collection is declared with:
+
+`Tasks = new Mongo.Collection("tasks");`
+
+Your methods will be:
+
+- `tasks.create(document)`
+- `tasks.edit(documentId, modifier)`
+- `tasks.delete(documentId)`
+
+You can create these methods by calling `Collection.smartMethods()`, with the following options:
+
+- `createCallback (currentUser, document)`: called before a document is created. Should return a document.
+- `editCallback (currentUser, modifier, originalDocument)`: called before a document is edited. Should return a Mongo modifier. 
+- `deleteCallback (currentUser, document)` [required]: called before a document is deleted. The document will only be deleted if this returns `true`. 
+
+```
+Tasks.smartMethods({
+  createCallback: function (currentUser, document) {
+    document = _.extend(document, {
+      createdAt: new Date(),
+      owner: currentUser._id,
+      username: currentUser.username
+    });
+    return document;
+  },
+  editCallback: function (currentUser, modifier, originalDocument) {
+    modifier.$set.editedAt = new Date();
+    return modifier;
+  },
+  deleteCallback: function (currentUser, document) {
+    return currentUser._id === document.userId;
+  }
+});
+```
+
+### Other Methods
+
+##### `Collection.getInsertableFields(user)`
+
+For a specific user, get an array of all the fields they have access to in a collection.
+
+##### `Collection.getEditableFields(user, document)`
+
+For a specific user and document, get an array of all the fields they can modify in this specific document.
