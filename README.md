@@ -82,9 +82,10 @@ Your methods will be:
 
 You can create these methods by calling `Collection.smartMethods()`, with the following options:
 
-- `createCallback (currentUser, document)`: called before a document is created. Should return a document.
-- `editCallback (currentUser, modifier, originalDocument)`: called before a document is edited. Should return a Mongo modifier. 
-- `deleteCallback (currentUser, document)` [required]: called before a document is deleted. The document will only be deleted if this returns `true`. 
+- `createCallback (currentUser, document)` [optional]: called before a document is created. Should return a document.
+- `editCallback (currentUser, modifier, originalDocument)` [optional]: called before a document is edited. Should return a Mongo modifier. 
+- `deleteCallback (currentUser, document)` [required]: called before a document is deleted. The document will not be deleted if this returns `false`. Note that the `delete` method will return whatever the callback returns. 
+- `createName`, `editName`, `deleteName` [optional]: lets you specify names for each method. 
 
 ```
 Tasks.smartMethods({

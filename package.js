@@ -1,13 +1,13 @@
 Package.describe({
   name: "utilities:smart-methods",
   summary: "Smart methods",
-  version: "0.1.2",
+  version: "0.1.3",
   git: "https://github.com/meteor-utilities/smart-methods.git"
 });
 
 Package.onUse(function (api) {
 
-  api.versionsFrom("METEOR@1.0");
+  api.versionsFrom("METEOR@1.3");
 
   api.use([
     'mongo',
