@@ -70,22 +70,21 @@ Tasks.attachSchema(tasksSchema);
 
 ### Smart Methods
 
-This package can optionally creates three default methods based on your schema. Assuming your collection is declared with:
-
-`Tasks = new Mongo.Collection("tasks");`
+This package can optionally creates three methods based on your schema. 
 
 Your methods will be:
 
-- `tasks.create(document)`
-- `tasks.edit(documentId, modifier)`
-- `tasks.delete(documentId)`
+- `create(document)`
+- `edit(documentId, modifier)`
+- `delete(documentId)`
+
+- `createName`, `editName`, `deleteName` [optional]: lets you specify names for each method. Note that the method will only be created if you provide a name for it (and in the case of the `delete` method, if you also provide a `deleteCallback` option). 
 
 You can create these methods by calling `Collection.smartMethods()`, with the following options:
 
 - `createCallback (currentUser, document)` [optional]: called before a document is created. Should return a document.
 - `editCallback (currentUser, modifier, originalDocument)` [optional]: called before a document is edited. Should return a Mongo modifier. 
 - `deleteCallback (currentUser, document)` [required]: called before a document is deleted. The document will not be deleted if this returns `false`. Note that the `delete` method will return whatever the callback returns. 
-- `createName`, `editName`, `deleteName` [optional]: lets you specify names for each method. 
 
 ```
 Tasks.smartMethods({
