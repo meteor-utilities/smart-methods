@@ -1,7 +1,7 @@
 Package.describe({
   name: "utilities:smart-methods",
   summary: "Smart methods",
-  version: "0.1.4",
+  version: "0.1.5",
   git: "https://github.com/meteor-utilities/smart-methods.git"
 });
 
